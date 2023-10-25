@@ -1,52 +1,317 @@
-# Prerequisites
-*.d
+#include <SDL2/SDL.h>
+#include <unistd.h>
+#include "function.h"
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+#define WINDOW_WIDTH 700
+#define WINDOW_HEIGHT 900
+#define FPS 60
 
-# Linker output
-*.ilk
-*.map
-*.exp
+/*~~~~~~~~~~init Balle~~~~~~~~~~~*/
+int xball;
+int yball;
+int rayonBall;
+int vitesseBallx;
+int vitesseBally;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-# Precompiled Headers
-*.gch
-*.pch
+/*~~~~~~~~~~init Barre~~~~~~~~~~~*/
+int posRectX; 
+int posRectY;
+int longueurRectW;
+int longueurRectH;
+int vitesseTouchex;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+/*~~~~~~~~~~init brick~~~~~~~~~~~*/
+int tableauX;
+int tableauY;
+int longueurRectTabW;
+int longueurRectTabH;
+int espaceBrick;
+int nbCol;
+int nbLigne;
+int ecartBrickX;
+int ecartBrickY;
+int VieBrique[6][4];
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+/*~~~~~~~~~~init Start~~~~~~~~~~~*/
+int start = 0;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+/*~~~~~~~~~~init Vie joueur~~~~~~~~~~~*/
+int coeur;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~~~fonction tableau brick~~~~~~~~~~~*/
+void DrawTableauBrique()
+{
+	changeColor(50,255,50);
+	for(int j=0;j<nbLigne;j++)
+	{
+		for(int i=0;i<nbCol;i++)
+		{
+			if(VieBrique[i][j]==1)
+			{
+				tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+				tableauY = ecartBrickY + (j * (longueurRectTabH + espaceBrick));
+				drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+			}
+			if(VieBrique[i][j]==1 && ((yball+rayonBall)>=tableauY) && (yball+rayonBall<=tableauY+longueurRectTabH) && ((xball+rayonBall)>=tableauX) && ((xball+rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally>0))
+			{
+				vitesseBally = -vitesseBally;
+				VieBrique[i][j]= 0;
+			}
+			else if(VieBrique[i][j]==1 && (yball-rayonBall>=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && ((xball-rayonBall)>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally<0))
+			{
+				vitesseBally = -vitesseBally;
+				VieBrique[i][j]= 0;
+			}
+			else if(VieBrique[i][j]==1 && (xball+rayonBall>=tableauX) && ((xball+rayonBall)<=tableauX+longueurRectTabW) && ((yball+rayonBall)>=tableauY) && ((yball+rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx>0))
+			{
+				vitesseBallx = -vitesseBallx;
+				VieBrique[i][j]= 0;
+			}
+			else if(VieBrique[i][j]==1 && (xball-rayonBall>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && ((yball-rayonBall)>=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx<0))
+			{
+				vitesseBallx = -vitesseBallx;
+				VieBrique[i][j]= 0;
+			}
+		}
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+
+
+
+/*~~~~~~~~fonction Balle~~~~~~~~~*/
+void drawBall()
+{
+	changeColor(255,50,50);
+	drawCircle(xball,yball,rayonBall);
+	if(start==1)
+	{
+		xball += vitesseBallx;
+		yball += vitesseBally;
+	}
+	if((xball+rayonBall >= WINDOW_WIDTH) || (xball<=rayonBall))
+	{
+		vitesseBallx = -vitesseBallx;	
+	}
+	else if(((yball+rayonBall <= WINDOW_HEIGHT-WINDOW_HEIGHT) || (yball<=rayonBall)))
+	{
+		vitesseBally = -vitesseBally;
+	}
+	else if(((xball+rayonBall)>=posRectX) && ((xball+rayonBall)<=posRectX+(longueurRectW)) && ((yball+rayonBall)>=posRectY) && ((yball-rayonBall)<=posRectY+longueurRectH))
+	{
+		vitesseBally = -vitesseBally;
+	}	
+	else if(((yball+rayonBall >= WINDOW_HEIGHT) || (yball<=rayonBall)))
+	{
+		start = 0;
+		xball = posRectX+50;
+		yball = posRectY-(longueurRectH+5);
+		vitesseBally = -vitesseBally;
+		coeur--;
+	}
+	if(coeur==0)
+		{
+			sprite(0,80,"/home/yswai/Downloads/YouDied_1_.bmp");
+			sprite(275,300,"/home/yswai/Downloads/GameOver.bmp");
+			sprite(125,450,"/home/yswai/Downloads/TryAgain.bmp");
+			sprite(425,450,"/home/yswai/Downloads/No.bmp");
+		for(int i =0;i<nbCol;i++)
+		{
+			for(int j=0;j<nbLigne;j++)
+			{
+				VieBrique[i][j]=0;
+			}
+		}
+		}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~fonction reboundBalle~~~~~*/
+void reboundBall()
+{
+	if((xball+rayonBall >= WINDOW_WIDTH) || (xball<=rayonBall))
+	{
+		vitesseBallx = -vitesseBallx;	
+	}
+	else if(((yball+rayonBall <= WINDOW_HEIGHT-WINDOW_HEIGHT) || (yball<=rayonBall)))
+	{
+		vitesseBally = -vitesseBally;
+	}
+	else if(((xball+rayonBall)>=posRectX) && ((xball+rayonBall)<=posRectX+(longueurRectW)) && ((yball+rayonBall)>=posRectY) && ((yball-rayonBall)<=posRectY+longueurRectH))
+	{
+		vitesseBally = -vitesseBally;
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Barre~~~~~~~~~*/
+void drawBarre()
+{
+	sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+///////////////////////////////
+
+void init_game()
+{
+ 	/*~~~~~~~~~~init barre~~~~~~~~~~~*/
+ 	posRectX = (WINDOW_WIDTH/2)-50; 
+ 	posRectY = (WINDOW_HEIGHT-150);
+ 	longueurRectW = 100;
+ 	longueurRectH = 20;
+	vitesseTouchex = 15;
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+	/*~~~~~~~~~~init balle~~~~~~~~~~~*/
+    xball = posRectX+50;
+	yball = posRectY-(longueurRectH+rayonBall+5);
+	rayonBall = 20;
+	vitesseBallx = 5;
+ 	vitesseBally = -5;
+ 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+	
+	
+	/*~~~~~~~~~~init brick~~~~~~~~~~~*/
+	tableauX= 0;
+	tableauY= 500;
+	longueurRectTabW = 100;
+	longueurRectTabH = 60;
+	espaceBrick = 5;
+	nbLigne = 4;
+	nbCol = 6 ;
+	ecartBrickX = (WINDOW_WIDTH-((nbCol * longueurRectTabW) + ((nbCol-1) * espaceBrick))) / 2;
+	ecartBrickY = 20;
+	for(int i =0;i<nbCol;i++)
+	{
+		for(int j=0;j<nbLigne;j++)
+		{
+			VieBrique[i][j]=1;
+		}
+	}
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+	/*~~~~~~~~init VieJoueur~~~~~~~~~*/
+	coeur = 3;
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+}
+
+void drawGame(){	
+	clear();
+	drawBarre();
+	drawBall();
+	DrawTableauBrique();
+	actualize();
+	usleep(1000000 / FPS); // 60 images par seconde | 1000000 = 1 seconde
+}
+
+void KeyPressed(SDL_Keycode touche){
+    /** @brief event.key.keysym.sym renvoi la touche appuyé
+     *
+     */
+    switch (touche) {
+        case SDLK_SPACE:
+			start = 1;
+			break;
+        case SDLK_d:
+        	clear();
+        	sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
+        	posRectX += vitesseTouchex;
+        	if(posRectX+longueurRectW< WINDOW_WIDTH)
+        	{
+        		vitesseTouchex = 0;
+        		posRectX = posRectX + 15;
+        	} 
+        	break;  
+		case SDLK_q:
+			clear();
+			sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
+			posRectX += -vitesseTouchex;
+			if(posRectX > 0 )
+        	{
+        		vitesseTouchex = 0;
+        		posRectX = posRectX - 15;
+        	} 
+        	break;
+        case SDLK_ESCAPE:
+            freeAndTerminate();
+            break;
+        default:
+            break;
+    }
+}
+
+void joyButtonPressed(){
+}
+
+void gameLoop() {
+    int programLaunched = 1;
+    while (programLaunched == 1) {
+        // Boucle pour garder le programme ouvert
+        // lorsque programLaunched est different de 1
+        // on sort de la boucle, donc de la fonction
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            // boucle pour la gestion d'évenement
+            switch (event.type) {
+                /** event.type renvoi le type d'evenement qui se passe
+                 * (si on appuie sur une touche, clique de souris...)
+                 * en fonction du type d'évènement on à alors
+                 * différentes information accessibles
+                 * voir doc pour plus d'event https://wiki.libsdl.org/SDL_EventType
+                 */
+                case SDL_QUIT:
+                    // quand on clique sur fermer la fénêtre en haut à droite
+                    programLaunched = 0;
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    /* clique de la souris
+                     * event.motion.y | event.motion.x pour les positions de la souris
+                     */
+                    printf("position de la souris x : %d , y : %d\n", event.motion.x, event.motion.y);
+                    break;
+                case SDL_KEYDOWN:
+                    KeyPressed(event.key.keysym.sym);
+                    break;
+                case SDL_JOYBUTTONDOWN:
+                    break;
+                default:
+                    break;
+            }
+        }
+        /* coder ici pour que le code s'execute après chaque évenement
+         * exemple dessiner un carré avec position int x, int y qu'on peut
+         * deplacer lorsqu'on appuie sur une touche
+         */
+        drawGame();
+    }
+}
+
+int main(){
+    /** @description 3 fonctions dans le main qui permettent de créer l'application et la maintenir ouverte :
+     *  init(...) : initialiser la SDL/ fenêtre
+     *  gameLoop() : boucle de jeu dans laquelle l'application reste ouverte
+     *  freeAndTerminate() : quitte le programme proprement
+     */
+    init(WINDOW_WIDTH, WINDOW_HEIGHT);
+    init_game();
+    gameLoop();
+    printf("Fin du programme\n");
+    freeAndTerminate();
+}
+
