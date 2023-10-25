@@ -95,7 +95,7 @@ void drawBall()
 {
 	changeColor(255,50,50);
 	drawCircle(xball,yball,rayonBall);
-	if(start==1)
+	if(start>0)
 	{
 		xball += vitesseBallx;
 		yball += vitesseBally;
@@ -104,7 +104,7 @@ void drawBall()
 	{
 		vitesseBallx = -vitesseBallx;	
 	}
-	else if(((yball+rayonBall <= WINDOW_HEIGHT-WINDOW_HEIGHT) || (yball<=rayonBall)))
+	else if(((yball+rayonBall <= WINDOW_HEIGHT-WINDOW_HEIGHT+1) || (yball<=rayonBall)))
 	{
 		vitesseBally = -vitesseBally;
 	}
@@ -122,6 +122,7 @@ void drawBall()
 	}
 	if(coeur==0)
 		{
+			start = -99;
 			sprite(0,80,"/home/yswai/Downloads/YouDied_1_.bmp");
 			sprite(275,300,"/home/yswai/Downloads/GameOver.bmp");
 			sprite(125,450,"/home/yswai/Downloads/TryAgain.bmp");
@@ -226,27 +227,33 @@ void KeyPressed(SDL_Keycode touche){
      */
     switch (touche) {
         case SDLK_SPACE:
-			start = 1;
+			start++;
 			break;
         case SDLK_d:
         	clear();
         	sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
-        	posRectX += vitesseTouchex;
-        	if(posRectX+longueurRectW< WINDOW_WIDTH)
-        	{
-        		vitesseTouchex = 0;
-        		posRectX = posRectX + 15;
-        	} 
+			if(start>0)
+			{
+				posRectX += vitesseTouchex;
+				if(posRectX+longueurRectW< WINDOW_WIDTH )
+				{
+					vitesseTouchex = 0;
+					posRectX = posRectX + 15;
+				} 
+			}
         	break;  
 		case SDLK_q:
 			clear();
 			sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
-			posRectX += -vitesseTouchex;
-			if(posRectX > 0 )
-        	{
-        		vitesseTouchex = 0;
-        		posRectX = posRectX - 15;
-        	} 
+			if(start>0)
+			{
+				posRectX += -vitesseTouchex;
+				if(posRectX > 0 )
+				{
+					vitesseTouchex = 0;
+					posRectX = posRectX - 15;
+				} 
+			}
         	break;
         case SDLK_ESCAPE:
             freeAndTerminate();
@@ -314,4 +321,3 @@ int main(){
     printf("Fin du programme\n");
     freeAndTerminate();
 }
-
