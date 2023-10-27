@@ -2,9 +2,11 @@
 #include <unistd.h>
 #include "function.h"
 
+
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 850
 #define FPS 60
+
 
 /*~~~~~~~~~~init Balle~~~~~~~~~~~*/
 int xball;
@@ -14,6 +16,7 @@ int vitesseBallx;
 int vitesseBally;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+
 /*~~~~~~~~~~init Barre~~~~~~~~~~~*/
 int posRectX; 
 int posRectY;
@@ -21,6 +24,7 @@ int longueurRectW;
 int longueurRectH;
 int vitesseTouchex;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 
 /*~~~~~~~~~~init brick~~~~~~~~~~~*/
 int tableauX;
@@ -38,8 +42,7 @@ int VieBrique[6][4];
 
 
 /*~~~~~~~~~~init Start~~~~~~~~~~~*/
-int start = 0;
-int Showlogo;
+int start;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
@@ -56,13 +59,14 @@ int logoNoYD;
 int logoX;
 int logoY;
 int logoheightY;
+int ShowEcran;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-/*~~~~~~~~~~fonction tableau brick~~~~~~~~~~~*/
+/*~~~~~~~~~~fonction brique~~~~~~~~~~~*/
 void DrawTableauBrique()
 {
-	changeColor(50,255,50);
+	changeColor(155, 145, 236);
 	for(int j=0;j<nbLigne;j++)
 	{
 		for(int i=0;i<nbCol;i++)
@@ -74,7 +78,7 @@ void DrawTableauBrique()
 				drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
 			}
 			/*Rebond Brique*/
-			if(VieBrique[i][j]==1 && ((yball+rayonBall)>=tableauY) && (yball+rayonBall<=tableauY+longueurRectTabH) && ((xball+rayonBall)>=tableauX) && ((xball+rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally>0))
+			if(VieBrique[i][j]==1 && ((yball+rayonBall)<=tableauY) && (yball-rayonBall>=tableauY+longueurRectTabH) && ((xball+rayonBall)<=tableauX) && ((xball-rayonBall)>=tableauX+longueurRectTabW) && (vitesseBally>0))
 			{
 				vitesseBally = -vitesseBally;
 				VieBrique[i][j]= 0;
@@ -127,29 +131,10 @@ void DrawTuto()
 /*~~~~~~~~fonction Ecran LOSE~~~~~~~~~*/
 void EcranLose()
 {
-	if(coeur==0)
-		{
-			start = -999;
-			sprite(0,0,"/home/yswai/Downloads/Ecran YouDied.bmp");
-			for(int i =0;i<nbCol;i++)
-			{
-				for(int j=0;j<nbLigne;j++)
-				{
-					VieBrique[i][j]=1;
-				}
-			}
-		}
-}
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-
-/*~~~~~~~~fonction Ecran WIN~~~~~~~~~*/
-void EcranWin()
-{
-	if(compteurBrick==0 && coeur>0)
+	if(coeur==0 && compteurBrick>0 && ShowEcran==1)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin.bmp");
+		sprite(0,0,"/home/yswai/Downloads/Ecran YouDied.bmp");
 		for(int i =0;i<nbCol;i++)
 		{
 			for(int j=0;j<nbLigne;j++)
@@ -158,6 +143,35 @@ void EcranWin()
 			}
 		}
 	}
+	else if(coeur==0 && compteurBrick>0 && ShowEcran==2)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran-YouDied-TryAgain.bmp");
+	}
+	else if(coeur==0 && compteurBrick>0 && ShowEcran==3)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran YouDied QUIT.bmp");
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Ecran WIN~~~~~~~~~*/
+void EcranWin()
+{
+	if(compteurBrick==0 && coeur>0 && ShowEcran==1)
+	{
+		start = -999;
+		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin.bmp");
+	}
+	else if(compteurBrick==0 && coeur>0 && ShowEcran==2)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-Again.bmp");
+
+	}
+	else if(compteurBrick==0 && coeur>0 && ShowEcran==3)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-No.bmp");
+	}
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -165,7 +179,7 @@ void EcranWin()
 /*~~~~~~~~fonction Balle~~~~~~~~~*/
 void drawBall()
 {
-	changeColor(255,50,50);
+	changeColor(79, 112, 222);
 	drawCircle(xball,yball,rayonBall);
 	if(start>0)
 	{
@@ -204,7 +218,7 @@ void drawBarre()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-/*~~~~~~~~fonction Barre~~~~~~~~~*/
+/*~~~~~~~~fonction Coeur~~~~~~~~~*/
 void DrawCoeur()
 {
 	for(int i=0;i<coeur;i++)
@@ -215,7 +229,7 @@ void DrawCoeur()
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-/*~~~~~~~~fonction Restart Game~~~~~~~~~*/
+/*~~~~~~~~fonction Game~~~~~~~~~*/
 void Game()
 {
 		
@@ -242,10 +256,24 @@ void RestartGame()
 	coeur = 3;
 	start = 0;
 	compteurBrick = nbCol*nbLigne;
+	posRectX = (WINDOW_WIDTH/2)-75; 
+ 	posRectY = (WINDOW_HEIGHT-80);
+	xball = posRectX+75;
+	yball = posRectY-longueurRectH;
+	for(int i =0;i<nbCol;i++)
+	{
+		for(int j=0;j<nbLigne;j++)
+		{
+			VieBrique[i][j]=1;
+		}
+	}
 	Game();
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
 ///////////////////////////////
+
 
 void init_game()
 {
@@ -288,6 +316,11 @@ void init_game()
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
+	/*~~~~~~~~~~init Start~~~~~~~~~~~*/
+	int start = 0;
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
 	/*~~~~~~~~init VieJoueur~~~~~~~~~*/
 	coeur = 3;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -301,8 +334,11 @@ void init_game()
 	logoNoYW = ((WINDOW_WIDTH/2)+25);
 	logoTryAgain = (WINDOW_WIDTH/2-(logoX+25));
 	logoNoYD = ((WINDOW_WIDTH/2)+25);
+
+	ShowEcran = 1;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 }
+
 
 void drawGame(){
 	clear();
@@ -310,6 +346,7 @@ void drawGame(){
 	actualize();
 	usleep(1000000 / FPS); // 60 images par seconde | 1000000 = 1 seconde
 }
+
 
 void KeyPressed(SDL_Keycode touche){
     switch (touche) {
@@ -350,6 +387,7 @@ void KeyPressed(SDL_Keycode touche){
     }
 }
 
+
 void MouseClick(int MouseX,int MouseY)
 {
 	printf("position de la souris x : %d , y : %d\n", MouseX, MouseY);
@@ -376,31 +414,42 @@ void MouseClick(int MouseX,int MouseY)
 		}
 	}
 }
+
+
 void MouseMovement(int MouseX,int MouseY)
 {
 	if(compteurBrick==0 && coeur>0)
 	{
 		if((MouseX>=logoAgain) && (MouseX<=logoAgain+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
 		{
-			sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-Again.bmp");
+			ShowEcran = 2;
 		}
 		else if((MouseX>=logoNoYW) && (MouseX<=logoNoYW+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
 		{
-			sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-No.bmp");
+			ShowEcran = 3;
+		}
+		else
+		{
+			ShowEcran = 1;
 		}
 	}
 	if(coeur==0 && compteurBrick>0)
 	{
 		if((MouseX>=logoTryAgain ) && (MouseX<=logoTryAgain +logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
 		{
-			sprite(0,0,"/home/yswai/Downloads/Ecran-YouDied-TryAgain.bmp");
+			ShowEcran = 2;
 		}
 		else if((MouseX>=logoNoYD) && (MouseX<=logoNoYD+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
 		{
-			sprite(0,0,"/home/yswai/Downloads/Ecran YouDied QUIT.bmp");
+			ShowEcran = 3;
+		}
+		else 
+		{
+			ShowEcran = 1;
 		}
 	}
 }
+
 
 void gameLoop() {
     int programLaunched = 1;
@@ -448,6 +497,7 @@ void gameLoop() {
         drawGame();
     }
 }
+
 
 int main(){
     /** @description 3 fonctions dans le main qui permettent de créer l'application et la maintenir ouverte :
