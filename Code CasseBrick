@@ -3,7 +3,7 @@
 #include "function.h"
 
 #define WINDOW_WIDTH 700
-#define WINDOW_HEIGHT 900
+#define WINDOW_HEIGHT 850
 #define FPS 60
 
 /*~~~~~~~~~~init Balle~~~~~~~~~~~*/
@@ -30,6 +30,7 @@ int longueurRectTabH;
 int espaceBrick;
 int nbCol;
 int nbLigne;
+int compteurBrick;
 int ecartBrickX;
 int ecartBrickY;
 int VieBrique[6][4];
@@ -38,12 +39,23 @@ int VieBrique[6][4];
 
 /*~~~~~~~~~~init Start~~~~~~~~~~~*/
 int start = 0;
+int Showlogo;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 /*~~~~~~~~~~init Vie joueur~~~~~~~~~~~*/
 int coeur;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+
+/*~~~~~~~~~~init Ecran~~~~~~~~~~~*/
+int logoAgain;
+int logoTryAgain;
+int logoNoYW;
+int logoNoYD;
+int logoX;
+int logoY;
+int logoheightY;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
@@ -61,33 +73,93 @@ void DrawTableauBrique()
 				tableauY = ecartBrickY + (j * (longueurRectTabH + espaceBrick));
 				drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
 			}
+			/*Rebond Brique*/
 			if(VieBrique[i][j]==1 && ((yball+rayonBall)>=tableauY) && (yball+rayonBall<=tableauY+longueurRectTabH) && ((xball+rayonBall)>=tableauX) && ((xball+rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally>0))
 			{
 				vitesseBally = -vitesseBally;
 				VieBrique[i][j]= 0;
+				compteurBrick--;
 			}
 			else if(VieBrique[i][j]==1 && (yball-rayonBall>=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && ((xball-rayonBall)>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally<0))
 			{
 				vitesseBally = -vitesseBally;
 				VieBrique[i][j]= 0;
+				compteurBrick--;
 			}
 			else if(VieBrique[i][j]==1 && (xball+rayonBall>=tableauX) && ((xball+rayonBall)<=tableauX+longueurRectTabW) && ((yball+rayonBall)>=tableauY) && ((yball+rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx>0))
 			{
 				vitesseBallx = -vitesseBallx;
 				VieBrique[i][j]= 0;
+				compteurBrick--;
 			}
-			else if(VieBrique[i][j]==1 && (xball-rayonBall>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && ((yball-rayonBall)>=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx<0))
+			else if(VieBrique[i][j]==1 && (xball-rayonBall>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && ((yball-rayonBall)<=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx<0))
 			{
 				vitesseBallx = -vitesseBallx;
 				VieBrique[i][j]= 0;
+				compteurBrick--;
+			}
+			/*~~~~~~~~~~~~~~~~~~~~~~*/
+		}
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Tuto~~~~~~~~~*/
+void DrawTuto()
+{
+	if(start==0 && coeur == 3)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran-tuto.bmp");
+	}
+	if(start == 0 && coeur == 2)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran-tuto-2Coeur.bmp");
+	}
+	if(start == 0 && coeur == 1)
+	{
+		sprite(0,0,"/home/yswai/Downloads/Ecran-tuto-1-coeur.bmp");
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Ecran LOSE~~~~~~~~~*/
+void EcranLose()
+{
+	if(coeur==0)
+		{
+			start = -999;
+			sprite(0,0,"/home/yswai/Downloads/Ecran YouDied.bmp");
+			for(int i =0;i<nbCol;i++)
+			{
+				for(int j=0;j<nbLigne;j++)
+				{
+					VieBrique[i][j]=1;
+				}
+			}
+		}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Ecran WIN~~~~~~~~~*/
+void EcranWin()
+{
+	if(compteurBrick==0 && coeur>0)
+	{
+		start = -999;
+		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin.bmp");
+		for(int i =0;i<nbCol;i++)
+		{
+			for(int j=0;j<nbLigne;j++)
+			{
+				VieBrique[i][j]=1;
 			}
 		}
 	}
 }
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-
-
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 /*~~~~~~~~fonction Balle~~~~~~~~~*/
@@ -104,56 +176,22 @@ void drawBall()
 	{
 		vitesseBallx = -vitesseBallx;	
 	}
-	else if(((yball+rayonBall <= WINDOW_HEIGHT-WINDOW_HEIGHT+1) || (yball<=rayonBall)))
+	else if(((yball+rayonBall <= 0) || (yball<=rayonBall)))
 	{
 		vitesseBally = -vitesseBally;
 	}
 	else if(((xball+rayonBall)>=posRectX) && ((xball+rayonBall)<=posRectX+(longueurRectW)) && ((yball+rayonBall)>=posRectY) && ((yball-rayonBall)<=posRectY+longueurRectH))
 	{
 		vitesseBally = -vitesseBally;
-	}	
+	}
 	else if(((yball+rayonBall >= WINDOW_HEIGHT) || (yball<=rayonBall)))
 	{
 		start = 0;
-		xball = posRectX+50;
-		yball = posRectY-(longueurRectH+5);
+		xball = posRectX+75;
+		yball = posRectY-longueurRectH;
 		vitesseBally = -vitesseBally;
 		coeur--;
-	}
-	if(coeur==0)
-		{
-			start = -99;
-			sprite(0,80,"/home/yswai/Downloads/YouDied_1_.bmp");
-			sprite(275,300,"/home/yswai/Downloads/GameOver.bmp");
-			sprite(125,450,"/home/yswai/Downloads/TryAgain.bmp");
-			sprite(425,450,"/home/yswai/Downloads/No.bmp");
-		for(int i =0;i<nbCol;i++)
-		{
-			for(int j=0;j<nbLigne;j++)
-			{
-				VieBrique[i][j]=0;
-			}
-		}
-		}
-}
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-
-/*~~~~~fonction reboundBalle~~~~~*/
-void reboundBall()
-{
-	if((xball+rayonBall >= WINDOW_WIDTH) || (xball<=rayonBall))
-	{
-		vitesseBallx = -vitesseBallx;	
-	}
-	else if(((yball+rayonBall <= WINDOW_HEIGHT-WINDOW_HEIGHT) || (yball<=rayonBall)))
-	{
-		vitesseBally = -vitesseBally;
-	}
-	else if(((xball+rayonBall)>=posRectX) && ((xball+rayonBall)<=posRectX+(longueurRectW)) && ((yball+rayonBall)>=posRectY) && ((yball-rayonBall)<=posRectY+longueurRectH))
-	{
-		vitesseBally = -vitesseBally;
-	}
+	}	
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -161,27 +199,69 @@ void reboundBall()
 /*~~~~~~~~fonction Barre~~~~~~~~~*/
 void drawBarre()
 {
-	sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
+	sprite(posRectX,posRectY,"/home/yswai/Downloads/Barre.bmp");
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+
+/*~~~~~~~~fonction Barre~~~~~~~~~*/
+void DrawCoeur()
+{
+	for(int i=0;i<coeur;i++)
+	{
+		sprite(i*30,WINDOW_HEIGHT-30,"/home/yswai/Downloads/Coeur.bmp");
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Restart Game~~~~~~~~~*/
+void Game()
+{
+		
+	DrawTuto();
+
+	drawBarre();
+	drawBall();
+
+	DrawTableauBrique();
+
+	DrawCoeur();
+
+	EcranLose();
+	EcranWin();
+
+	
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Restart Game~~~~~~~~~*/
+void RestartGame()
+{
+	coeur = 3;
+	start = 0;
+	compteurBrick = nbCol*nbLigne;
+	Game();
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 ///////////////////////////////
 
 void init_game()
 {
  	/*~~~~~~~~~~init barre~~~~~~~~~~~*/
- 	posRectX = (WINDOW_WIDTH/2)-50; 
- 	posRectY = (WINDOW_HEIGHT-150);
- 	longueurRectW = 100;
- 	longueurRectH = 20;
+ 	posRectX = (WINDOW_WIDTH/2)-75; 
+ 	posRectY = (WINDOW_HEIGHT-80);
+ 	longueurRectW = 150;
+ 	longueurRectH = 30;
 	vitesseTouchex = 15;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 	/*~~~~~~~~~~init balle~~~~~~~~~~~*/
-    xball = posRectX+50;
-	yball = posRectY-(longueurRectH+rayonBall+5);
-	rayonBall = 20;
+    xball = posRectX+75;
+	yball = posRectY-(longueurRectH+rayonBall);
+	rayonBall = 15;
 	vitesseBallx = 5;
  	vitesseBally = -5;
  	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -190,8 +270,8 @@ void init_game()
 	/*~~~~~~~~~~init brick~~~~~~~~~~~*/
 	tableauX= 0;
 	tableauY= 500;
-	longueurRectTabW = 100;
-	longueurRectTabH = 60;
+	longueurRectTabW = 80;
+	longueurRectTabH = 40;
 	espaceBrick = 5;
 	nbLigne = 4;
 	nbCol = 6 ;
@@ -204,38 +284,45 @@ void init_game()
 			VieBrique[i][j]=1;
 		}
 	}
+	compteurBrick = nbCol*nbLigne;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 	/*~~~~~~~~init VieJoueur~~~~~~~~~*/
 	coeur = 3;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+	/*~~~~~~~~init Ecran~~~~~~~~~*/
+	logoX = 150;
+	logoY = 70;
+	logoheightY = ((WINDOW_HEIGHT/2)+45);
+	logoAgain = (WINDOW_WIDTH/2-(logoX+25));
+	logoNoYW = ((WINDOW_WIDTH/2)+25);
+	logoTryAgain = (WINDOW_WIDTH/2-(logoX+25));
+	logoNoYD = ((WINDOW_WIDTH/2)+25);
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 }
 
-void drawGame(){	
+void drawGame(){
 	clear();
-	drawBarre();
-	drawBall();
-	DrawTableauBrique();
+	Game();
 	actualize();
 	usleep(1000000 / FPS); // 60 images par seconde | 1000000 = 1 seconde
 }
 
 void KeyPressed(SDL_Keycode touche){
-    /** @brief event.key.keysym.sym renvoi la touche appuyé
-     *
-     */
     switch (touche) {
         case SDLK_SPACE:
 			start++;
 			break;
         case SDLK_d:
         	clear();
-        	sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
+        	sprite(posRectX,posRectY,"/home/yswai/Downloads/Barre.bmp");
 			if(start>0)
 			{
 				posRectX += vitesseTouchex;
-				if(posRectX+longueurRectW< WINDOW_WIDTH )
+				if(posRectX+longueurRectW+5< WINDOW_WIDTH )
 				{
 					vitesseTouchex = 0;
 					posRectX = posRectX + 15;
@@ -244,11 +331,11 @@ void KeyPressed(SDL_Keycode touche){
         	break;  
 		case SDLK_q:
 			clear();
-			sprite(posRectX,posRectY,"/home/yswai/Downloads/BarreCasseBrick_1_.bmp");
+			sprite(posRectX,posRectY,"/home/yswai/Downloads/Barre.bmp");
 			if(start>0)
 			{
 				posRectX += -vitesseTouchex;
-				if(posRectX > 0 )
+				if(posRectX-5 > 0 )
 				{
 					vitesseTouchex = 0;
 					posRectX = posRectX - 15;
@@ -263,7 +350,56 @@ void KeyPressed(SDL_Keycode touche){
     }
 }
 
-void joyButtonPressed(){
+void MouseClick(int MouseX,int MouseY)
+{
+	printf("position de la souris x : %d , y : %d\n", MouseX, MouseY);
+	if(compteurBrick==0 && coeur>0)
+	{
+		if((MouseX>=logoAgain) && (MouseX<=logoAgain+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			RestartGame();
+		}
+		else if((MouseX>=logoNoYW) && (MouseX<=logoNoYW+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			freeAndTerminate();
+		}
+	}
+	if(coeur==0 && compteurBrick>0)
+	{
+		if((MouseX>=logoTryAgain ) && (MouseX<=logoTryAgain +logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			RestartGame();
+		}
+		else if((MouseX>=logoNoYD) && (MouseX<=logoNoYD+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			freeAndTerminate();
+		}
+	}
+}
+void MouseMovement(int MouseX,int MouseY)
+{
+	if(compteurBrick==0 && coeur>0)
+	{
+		if((MouseX>=logoAgain) && (MouseX<=logoAgain+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-Again.bmp");
+		}
+		else if((MouseX>=logoNoYW) && (MouseX<=logoNoYW+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-No.bmp");
+		}
+	}
+	if(coeur==0 && compteurBrick>0)
+	{
+		if((MouseX>=logoTryAgain ) && (MouseX<=logoTryAgain +logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			sprite(0,0,"/home/yswai/Downloads/Ecran-YouDied-TryAgain.bmp");
+		}
+		else if((MouseX>=logoNoYD) && (MouseX<=logoNoYD+logoX) && (MouseY>=logoheightY) && (MouseY<=logoheightY+logoY))
+		{
+			sprite(0,0,"/home/yswai/Downloads/Ecran YouDied QUIT.bmp");
+		}
+	}
 }
 
 void gameLoop() {
@@ -286,12 +422,16 @@ void gameLoop() {
                     // quand on clique sur fermer la fénêtre en haut à droite
                     programLaunched = 0;
                     break;
-                case SDL_MOUSEBUTTONUP:
+                case SDL_MOUSEBUTTONDOWN:
                     /* clique de la souris
                      * event.motion.y | event.motion.x pour les positions de la souris
                      */
-                    printf("position de la souris x : %d , y : %d\n", event.motion.x, event.motion.y);
+                    MouseClick(event.motion.x, event.motion.y);
                     break;
+				case SDL_MOUSEMOTION:
+                    MouseMovement(event.motion.x, event.motion.y);
+                    break;
+
                 case SDL_KEYDOWN:
                     KeyPressed(event.key.keysym.sym);
                     break;
