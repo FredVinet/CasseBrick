@@ -84,9 +84,40 @@ void DrawTableauBrique()
 				VieBrique[i][j]= 0;
 				compteurBrick--;
 			}
-			else if(VieBrique[i][j]==1 && (yball-rayonBall>=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && ((xball-rayonBall)>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally<0))
+			else if(VieBrique[i][j]==1 && (yball-rayonBall<=tableauY+longueurRectTabH) && ((yball-rayonBall)>=tableauY) && ((xball-rayonBall)>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW)&& (vitesseBally<0))
 			{
 				vitesseBally = -vitesseBally;
+				VieBrique[i][j]= 0;
+				compteurBrick--;
+			}
+			else if(VieBrique[i][j]==1 && (xball+rayonBall>=tableauX) && ((xball+rayonBall)<=tableauX) && ((yball+rayonBall)>=tableauY) && ((yball+rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx>0))
+			{
+				vitesseBallx = -vitesseBallx;
+				VieBrique[i][j]= 0;
+				compteurBrick--;
+			}
+			else if(VieBrique[i][j]==1 && (xball-rayonBall>=tableauX) && ((xball-rayonBall)<=tableauX) && ((yball-rayonBall)<=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx<0))
+			{
+				vitesseBallx = -vitesseBallx;
+				VieBrique[i][j]= 0;
+				compteurBrick--;
+			}
+			///////
+			/*else if(VieBrique[i][j]==1 && ((yball-rayonBall)<=tableauY) && (yball+rayonBall>=tableauY+longueurRectTabH) && ((xball-rayonBall)<=tableauX) && ((xball+rayonBall)>=tableauX+longueurRectTabW) && (vitesseBally<0))
+			{
+				vitesseBally = -vitesseBally;
+				VieBrique[i][j]= 0;
+				compteurBrick--;
+			}
+			else if(VieBrique[i][j]==1 && (yball+rayonBall>=tableauY) && ((yball+rayonBall)<=tableauY+longueurRectTabH) && ((xball+rayonBall)>=tableauX) && ((xball+rayonBall)<=tableauX+longueurRectTabW) && (vitesseBally>0))
+			{
+				vitesseBally = -vitesseBally;
+				VieBrique[i][j]= 0;
+				compteurBrick--;
+			}
+			else if(VieBrique[i][j]==1 && (xball-rayonBall<=tableauX) && ((xball-rayonBall)>=tableauX+longueurRectTabW) && ((yball-rayonBall)<=tableauY) && ((yball-rayonBall)>=tableauY+longueurRectTabH) && (vitesseBallx<0))
+			{
+				vitesseBallx = -vitesseBallx;
 				VieBrique[i][j]= 0;
 				compteurBrick--;
 			}
@@ -95,13 +126,7 @@ void DrawTableauBrique()
 				vitesseBallx = -vitesseBallx;
 				VieBrique[i][j]= 0;
 				compteurBrick--;
-			}
-			else if(VieBrique[i][j]==1 && (xball-rayonBall>=tableauX) && ((xball-rayonBall)<=tableauX+longueurRectTabW) && ((yball-rayonBall)<=tableauY) && ((yball-rayonBall)<=tableauY+longueurRectTabH) && (vitesseBallx<0))
-			{
-				vitesseBallx = -vitesseBallx;
-				VieBrique[i][j]= 0;
-				compteurBrick--;
-			}
+			}*/
 			/*~~~~~~~~~~~~~~~~~~~~~~*/
 		}
 	}
@@ -145,10 +170,12 @@ void EcranLose()
 	}
 	else if(coeur==0 && compteurBrick>0 && ShowEcran==2)
 	{
+		start = -999;
 		sprite(0,0,"/home/yswai/Downloads/Ecran-YouDied-TryAgain.bmp");
 	}
 	else if(coeur==0 && compteurBrick>0 && ShowEcran==3)
 	{
+		start = -999;
 		sprite(0,0,"/home/yswai/Downloads/Ecran YouDied QUIT.bmp");
 	}
 }
@@ -165,11 +192,13 @@ void EcranWin()
 	}
 	else if(compteurBrick==0 && coeur>0 && ShowEcran==2)
 	{
+		start = -999;
 		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-Again.bmp");
 
 	}
 	else if(compteurBrick==0 && coeur>0 && ShowEcran==3)
 	{
+		start = -999;
 		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-No.bmp");
 	}
 }
@@ -198,7 +227,7 @@ void drawBall()
 	{
 		vitesseBally = -vitesseBally;
 	}
-	else if(((yball+rayonBall >= WINDOW_HEIGHT) || (yball<=rayonBall)))
+	else if(((yball-rayonBall >= WINDOW_HEIGHT) || (yball<=rayonBall)))
 	{
 		start = 0;
 		xball = posRectX+75;
@@ -236,11 +265,10 @@ void Game()
 	DrawTuto();
 
 	drawBarre();
+	DrawCoeur();
 	drawBall();
 
 	DrawTableauBrique();
-
-	DrawCoeur();
 
 	EcranLose();
 	EcranWin();
@@ -282,7 +310,7 @@ void init_game()
  	posRectY = (WINDOW_HEIGHT-80);
  	longueurRectW = 150;
  	longueurRectH = 30;
-	vitesseTouchex = 15;
+	vitesseTouchex = 1;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
