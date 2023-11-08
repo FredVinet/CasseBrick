@@ -3,8 +3,8 @@
 #include "function.h"
 
 
-#define WINDOW_WIDTH 700
-#define WINDOW_HEIGHT 850
+#define WINDOW_WIDTH 1300
+#define WINDOW_HEIGHT 1000
 #define FPS 60
 
 
@@ -18,10 +18,18 @@ int vitesseBally;
 
 
 /*~~~~~~~~~~init Barre~~~~~~~~~~~*/
-int posRectX; 
-int posRectY;
+int posRectBasX; 
+int posRectBasY;
+int posRectDroiteX; 
+int posRectDroiteY;
+int posRectGaucheX; 
+int posRectGaucheY;
+int posRectHautX; 
+int posRectHautY;
 int longueurRectW;
 int longueurRectH;
+int longueurRectV;
+int largeurRectV;
 int vitesseTouchex;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -43,10 +51,11 @@ int VieBrique[6][4];
 
 /*~~~~~~~~~~init Start~~~~~~~~~~~*/
 int start;
+int quit;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-/*~~~~~~~~~~init Vie joueur~~~~~~~~~~~*/
+/*~~~~~~~~init Vie joueur~~~~~~~~*/
 int coeur;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -60,6 +69,20 @@ int logoX;
 int logoY;
 int logoheightY;
 int ShowEcran;
+
+int Menu1X;
+int Menu2X;
+int MenuY;
+int LongueurMenuX;
+int	LongueurMenuY;
+int MenuJoueur1Y;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~~~init Ecran~~~~~~~~~~~*/
+int game;
+int joueur;
+int easter;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
@@ -70,19 +93,56 @@ void DrawTableauBrique()
 	{
 		for(int i=0;i<nbCol;i++)
 		{
-			if(VieBrique[i][j]==2)
-			{
-				changeColor(155, 145, 236);
-				tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
-				tableauY = ecartBrickY + (j * (longueurRectTabH + espaceBrick));
-				drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+			if(game==3 && joueur==1)
+			{	
+				if(VieBrique[i][j]==2)
+				{
+					changeColor(60, 45, 255);
+					tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+					tableauY = ecartBrickY + (j * (longueurRectTabH + espaceBrick));
+					drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				}
+				if(VieBrique[i][j]==1)
+				{
+					changeColor(60, 124, 255);
+					tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+					tableauY = ecartBrickY + (j * (longueurRectTabH + espaceBrick));
+					drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				}
 			}
-			if(VieBrique[i][j]==1)
+			if(game==3 && joueur==2 || joueur==4)
 			{
-				changeColor(109, 191, 196);
-				tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
-				tableauY = ecartBrickY + (j * (longueurRectTabH + espaceBrick));
-				drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				if(VieBrique[i][j]==2)
+				{
+					changeColor(60, 45, 255);
+					tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+					tableauY = WINDOW_HEIGHT/2 - (j * (longueurRectTabH + espaceBrick));
+					drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				}
+				if(VieBrique[i][j]==1)
+				{
+					changeColor(60, 124, 255);
+					tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+					tableauY = WINDOW_HEIGHT/2 - (j * (longueurRectTabH + espaceBrick));
+					drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				}
+			}
+			if(game==3 && joueur==3)
+			{
+				if(VieBrique[i][j]==2)
+				{
+					changeColor(60, 45, 255);
+					tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+					tableauY = WINDOW_HEIGHT/3 - (j * (longueurRectTabH + espaceBrick));
+					drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				}
+				if(VieBrique[i][j]==1)
+				{
+					changeColor(60, 124, 255);
+					tableauX = ecartBrickX + (i * (longueurRectTabW + espaceBrick));
+					tableauY = WINDOW_HEIGHT/3 - (j * (longueurRectTabH + espaceBrick));
+					drawRect(tableauX,tableauY,longueurRectTabW,longueurRectTabH);
+				}
 			}
 			/*Rebond Brique*/
 			/*~~~~Bas~~~~*/
@@ -93,6 +153,7 @@ void DrawTableauBrique()
 				compteurBrick--;
 			}
 			/*~~~~~~~~~~*/
+
 			/*~~~Haut~~~*/
 			else if((VieBrique[i][j]>0 &&(yball>=tableauY-rayonBall) && (yball<tableauY)) && ((xball<=tableauX+longueurRectTabW) && (xball>=tableauX)) && (vitesseBally>0))
 			{
@@ -101,6 +162,7 @@ void DrawTableauBrique()
 				compteurBrick--;
 			}
 			/*~~~~~~~~~*/
+
 			/*~~Gauche~~*/
 			else if(VieBrique[i][j]>0 && (xball>=tableauX-rayonBall) && (xball<tableauX) && ((yball>=tableauY) && (yball<=tableauY+longueurRectTabH)) && (vitesseBallx>0))
 			{
@@ -109,6 +171,7 @@ void DrawTableauBrique()
 				compteurBrick--;
 			}
 			/*~~~~~~~~~~*/
+
 			/*~~Droite~~*/
 			else if(VieBrique[i][j]>0 && (xball<=tableauX+longueurRectTabW+rayonBall) && (xball>tableauX+longueurRectTabW) && ((yball>=tableauY) && (yball<=tableauY+longueurRectTabH)) && (vitesseBallx<0))
 			{
@@ -121,24 +184,193 @@ void DrawTableauBrique()
 		}
 	}
 }
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+/*~~~~~~~~fonction Menu~~~~~~~~~*/
+void DrawMenu()
+{
+	if(game==0)
+	{
+		sprite(0,0,"Assets/Menu1.bmp");
+
+
+		if(game==0 && ShowEcran==1 && easter==0)
+		{
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+			sprite(780,600,"Assets/NonBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==2 && easter==0)
+		{
+			sprite(413,600,"Assets/OuiRouge.bmp");
+			sprite(780,600,"Assets/NonBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==3 && easter==0)
+		{
+			sprite(778,596,"Assets/NonRouge.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==1 && easter == 1)
+		{
+			sprite(780,600,"Assets/TuEsSurBlanc.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==2 && easter == 1)
+		{
+			sprite(780,600,"Assets/TuEsSurBlanc.bmp");
+			sprite(415,600,"Assets/OuiRouge.bmp");
+		}
+		if(game==0 && ShowEcran==3 && easter == 1)
+		{
+			sprite(780,600,"Assets/TuEsSurRouge.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==1 && easter == 2)
+		{
+			sprite(780,600,"Assets/VraimentBlanc.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==2 && easter == 2)
+		{
+			sprite(780,600,"Assets/VraimentBlanc.bmp");
+			sprite(415,600,"Assets/OuiRouge.bmp");
+		}
+		if(game==0 && ShowEcran==3 && easter == 2)
+		{
+			sprite(780,600,"Assets/VraimentRouge.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==1 && easter == 3)
+		{
+			sprite(780,600,"Assets/OkBlanc.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+		if(game==0 && ShowEcran==2 && easter == 3)
+		{
+			sprite(780,600,"Assets/OkBlanc.bmp");
+			sprite(415,600,"Assets/OuiRouge.bmp");
+		}
+		if(game==0 && ShowEcran==3 && easter == 3)
+		{
+			sprite(780,600,"Assets/okRouge.bmp");
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+		}
+	}
+
+
+	if(game==1)
+	{
+		sprite(0,0,"Assets/MenuJoueur.bmp");
+
+
+		if(joueur==0)
+		{
+			sprite(600,450,"Assets/0Joueur.bmp");
+		}
+		if(joueur==1)
+		{
+			sprite(600,450,"Assets/1Joueur.bmp");
+		}
+		if(joueur==2)
+		{
+			sprite(600,450,"Assets/2Joueur.bmp");
+		}
+		if(joueur==3)
+		{
+			sprite(600,450,"Assets/3Joueur.bmp");
+		}
+		if(joueur==4)
+		{
+			sprite(600,450,"Assets/4Joueur.bmp");
+		}
+
+
+		if(joueur>0)
+		{
+			sprite(575,600,"Assets/OkJoueurBlanc.bmp");
+		}
+		if(joueur>0 && ShowEcran == 4)
+		{
+			sprite(575,600,"Assets/okJoueurRouge.bmp");
+			sprite(415,450,"Assets/-JoueurBlanc.bmp");
+			sprite(800,450,"Assets/+JoueurBlanc.bmp");
+		}
+
+
+		if(game==1 && ShowEcran==1)
+		{
+			sprite(415,450,"Assets/-JoueurBlanc.bmp");
+			sprite(800,450,"Assets/+JoueurBlanc.bmp");
+		}
+		if(game==1 && ShowEcran==2)
+		{
+			sprite(415,450,"Assets/-JoueurRouge.bmp");
+			sprite(800,450,"Assets/+JoueurBlanc.bmp");
+		}
+		if(game==1 && ShowEcran==3)
+		{
+			sprite(415,450,"Assets/-JoueurBlanc.bmp");
+			sprite(800,452,"Assets/+JoueurRouge.bmp");
+		}
+	}
+	if(game==2 && joueur<2)
+	{
+		sprite(0,0,"Assets/MenuReady1.bmp");
+		if(game==2 && joueur<2 && ShowEcran==1)
+		{
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+			sprite(780,600,"Assets/NonBlanc.bmp");
+		}
+		if(game==2 && joueur<2 && ShowEcran==2)
+		{
+			sprite(415,600,"Assets/OuiRouge.bmp");
+			sprite(780,600,"Assets/NonBlanc.bmp");
+		}
+		if(game==2 && joueur<2 && ShowEcran==3)
+		{
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+			sprite(780,600,"Assets/NonRouge.bmp");
+		}
+	}
+	if(game==2 && joueur>1)
+	{
+		sprite(0,0,"Assets/MenuReady+1.bmp");
+		if(game==2 && joueur>1 && ShowEcran==1)
+		{
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+			sprite(780,600,"Assets/NonBlanc.bmp");
+		}
+		if(game==2 && joueur>1 && ShowEcran==2)
+		{
+			sprite(415,600,"Assets/OuiRouge.bmp");
+			sprite(780,600,"Assets/NonBlanc.bmp");
+		}
+		if(game==2 && joueur>1 && ShowEcran==3)
+		{
+			sprite(415,600,"Assets/OuiBlanc.bmp");
+			sprite(780,600,"Assets/NonRouge.bmp");
+		}
+	}
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 /*~~~~~~~~fonction Tuto~~~~~~~~~*/
 void DrawTuto()
 {
-	if(start==0 && coeur == 3)
+	if(start==0 && coeur == 3 && game==3 && joueur>0)
 	{
-		sprite(0,0,"/home/yswai/Downloads/Ecran-tuto.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-tuto.bmp");
 	}
-	if(start == 0 && coeur == 2)
+	if(start == 0 && coeur == 2 && game==3 && joueur>0)
 	{
-		sprite(0,0,"/home/yswai/Downloads/Ecran-tuto-2Coeur.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-tuto-2Coeur.bmp");
 	}
-	if(start == 0 && coeur == 1)
+	if(start == 0 && coeur == 1 && game==3 && joueur>0)
 	{
-		sprite(0,0,"/home/yswai/Downloads/Ecran-tuto-1-coeur.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-tuto-1-coeur.bmp");
 	}
+	
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -149,17 +381,25 @@ void EcranLose()
 	if(coeur==0 && compteurBrick>0 && ShowEcran==1)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran YouDied.bmp");
+		for(int i=0;i<nbCol;i++)
+		{
+			for(int j=0;j<nbLigne;j++)
+			{
+				VieBrique[i][j]=0;
+			}
+		}
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran YouDied.bmp");
+		
 	}
 	else if(coeur==0 && compteurBrick>0 && ShowEcran==2)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran-YouDied-TryAgain.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-YouDied-TryAgain.bmp");
 	}
 	else if(coeur==0 && compteurBrick>0 && ShowEcran==3)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran YouDied QUIT.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran YouDied QUIT.bmp");
 	}
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -171,18 +411,18 @@ void EcranWin()
 	if(compteurBrick==0 && coeur>0 && ShowEcran==1)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-YouWin.bmp");
 	}
 	else if(compteurBrick==0 && coeur>0 && ShowEcran==2)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-Again.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-YouWin-Again.bmp");
 
 	}
 	else if(compteurBrick==0 && coeur>0 && ShowEcran==3)
 	{
 		start = -999;
-		sprite(0,0,"/home/yswai/Downloads/Ecran-YouWin-No.bmp");
+		sprite((WINDOW_WIDTH/2)-350,150,"Assets/Ecran-YouWin-No.bmp");
 	}
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -202,22 +442,144 @@ void drawBall()
 	{
 		vitesseBallx = -vitesseBallx;	
 	}
-	else if((yball-rayonBall <= 0) && (yball<=rayonBall))
+	if(joueur==1 || joueur == 3)
+	{
+		if((yball-rayonBall <= 0) && (yball<=rayonBall))
+		{
+			vitesseBally = -vitesseBally;
+		}
+	}
+	/*~~HautBarreBas~~*/
+	if((yball>=posRectBasY-rayonBall) && (yball<posRectBasY) && (xball<=posRectBasX+longueurRectW) && (xball>=posRectBasX) && (vitesseBally>0))
 	{
 		vitesseBally = -vitesseBally;
 	}
-	else if(((xball+rayonBall)>=posRectX) && ((xball+rayonBall)<=posRectX+(longueurRectW)) && ((yball+rayonBall)>=posRectY) && ((yball-rayonBall)<=posRectY+longueurRectH))
+	/*~~~~~~~*/
+
+	/*~~DroiteBarreBas~~*/
+	else if((xball<=posRectBasX+longueurRectW+rayonBall) && (xball>posRectBasX+longueurRectW) && ((yball>=posRectBasY) && (yball<=posRectBasY+longueurRectH)) && (vitesseBallx<0))
+	{
+		vitesseBallx = -vitesseBallx;
+	}
+	/*~~~~~~~~~~*/
+
+	/*~~GaucheBarreBas~~*/
+	else if((xball>=posRectBasX-rayonBall) && (xball<posRectBasX) && ((yball>=posRectBasY) && (yball<=posRectBasY+longueurRectH)) && (vitesseBallx>0))
+	{
+		vitesseBallx = -vitesseBallx;
+	}
+	/*~~~~~~~~~~*/
+
+
+	/*~~BasBarreHaut~~*/
+	if(((yball<=posRectHautY+longueurRectH+rayonBall) && (yball>posRectHautY+longueurRectH)) && ((xball<=posRectHautX+longueurRectW) && (xball>=posRectHautX)) && (vitesseBally<0))
 	{
 		vitesseBally = -vitesseBally;
 	}
-	else if(yball+rayonBall >= WINDOW_HEIGHT)
+	/*~~~~~~~*/
+
+	/*~~DroiteBarreHaut~~*/
+	else if((xball<=posRectHautX+longueurRectW+rayonBall) && (xball>posRectHautX+longueurRectW) && ((yball>=posRectHautY) && (yball<=posRectHautY+longueurRectH)) && (vitesseBallx<0))
+	{
+		vitesseBallx = -vitesseBallx;
+	}
+	/*~~~~~~~~~~*/
+
+	/*~~GaucheBarreHaut~~*/
+	else if((xball>=posRectHautX-rayonBall) && (xball<posRectHautX) && ((yball>=posRectHautY) && (yball<=posRectHautY+longueurRectH)) && (vitesseBallx>0))
+	{
+		vitesseBallx = -vitesseBallx;
+	}
+	/*~~~~~~~~~~*/
+
+	/*~~DroiteBarreGauche~~*/
+	if((xball<=posRectGaucheX+largeurRectV+rayonBall) && (xball>posRectGaucheX+largeurRectV) && ((yball>=posRectGaucheY) && (yball<=posRectGaucheY+longueurRectV)) && (vitesseBallx<0))
+	{
+		vitesseBallx = -vitesseBallx;
+	}
+	/*~~~~~~~~~*/
+	/*~~~~BasBarreGauche~~~~*/
+	else if(((yball<=posRectGaucheY+longueurRectV+rayonBall) && (yball>posRectGaucheY+longueurRectV)) && ((xball<=posRectGaucheX+largeurRectV) && (xball>=posRectGaucheX)) && (vitesseBally<0))
+	{
+		vitesseBally = -vitesseBally;
+	}
+	/*~~~~~~~~~~*/
+
+	/*~~~HautBarreGauche~~~*/
+	else if(((yball>=posRectGaucheY-rayonBall) && (yball<posRectGaucheY)) && ((xball<=posRectGaucheX+largeurRectV) && (xball>=posRectGaucheX)) && (vitesseBally>0))
+	{
+		vitesseBally = -vitesseBally;
+	}
+	/*~~~~~~~~~*/
+
+	/*~~~HautBarreDroite~~~*/
+	if(((yball>=posRectDroiteY-rayonBall) && (yball<posRectDroiteY)) && ((xball<=posRectDroiteX+largeurRectV) && (xball>=posRectDroiteX)) && (vitesseBally>0))
+	{
+		vitesseBally = -vitesseBally;
+	}
+	/*~~~~~~~~~*/
+	/*~~~~BasBarreDroite~~~~*/
+	else if(((yball<=posRectDroiteY+longueurRectV+rayonBall) && (yball>posRectDroiteY+longueurRectV)) && ((xball<=posRectDroiteX+largeurRectV) && (xball>=posRectDroiteX)) && (vitesseBally<0))
+	{
+		vitesseBally = -vitesseBally;
+	}
+	/*~~~~~~~~~~*/
+	/*~~GaucheBarreHaut~~*/
+	else if((xball>=posRectDroiteX-rayonBall) && (xball<posRectDroiteX) && ((yball>=posRectDroiteY) && (yball<=posRectDroiteY+longueurRectV)) && (vitesseBallx>0))
+	{
+		vitesseBallx = -vitesseBallx;
+	}
+	/*~~~~~~~~~~*/
+	else if(yball+rayonBall >= WINDOW_HEIGHT && joueur>0)
 	{
 		start = 0;
-		xball = posRectX+75;
-		yball = posRectY-longueurRectH+5;
+		posRectBasX = (WINDOW_WIDTH/2)-75; 
+		posRectBasY = (WINDOW_HEIGHT-80);
+		xball = posRectBasX+75;
+		yball = posRectBasY-longueurRectH+5;
 		vitesseBally = -vitesseBally;
 		coeur--;
-	}	
+	}
+	else if(yball-rayonBall <= 0 && joueur == 2 || joueur == 4)
+	{
+		start = 0;
+		posRectBasX = (WINDOW_WIDTH/2)-75; 
+		posRectBasY = (WINDOW_HEIGHT-80);
+		posRectHautX = (WINDOW_WIDTH/2)-75; 
+		posRectHautY = 70;
+		xball = posRectHautX+75;
+		yball = posRectHautY+(longueurRectH*2)-5;
+		vitesseBally = -vitesseBally;
+		coeur--;
+	}
+	else if(xball-rayonBall <= 0 && joueur == 3 || joueur ==4)
+	{
+		start = 0;
+		posRectBasX = (WINDOW_WIDTH/2)-75; 
+		posRectBasY = (WINDOW_HEIGHT-80);
+		posRectDroiteX = (WINDOW_WIDTH-100); 
+		posRectDroiteY = (WINDOW_HEIGHT/2)-75;;
+		posRectGaucheX = 70; 
+		posRectGaucheY = (WINDOW_HEIGHT/2)-75;
+		xball = posRectGaucheX+(largeurRectV*2)-5;
+		yball = posRectGaucheY+75;
+		vitesseBally = -vitesseBally;
+		coeur--;
+	}
+	else if(xball+rayonBall >= WINDOW_WIDTH && joueur == 3 || joueur ==4)
+	{
+		start = 0;
+		posRectBasX = (WINDOW_WIDTH/2)-75; 
+		posRectBasY = (WINDOW_HEIGHT-80);
+		posRectDroiteX = (WINDOW_WIDTH-100); 
+		posRectDroiteY = (WINDOW_HEIGHT/2)-75;;
+		posRectGaucheX = 70; 
+		posRectGaucheY = (WINDOW_HEIGHT/2)-75;
+		xball = posRectDroiteX-largeurRectV-5;
+		yball = posRectDroiteY+75;
+		vitesseBally = -vitesseBally;
+		coeur--;
+	}
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -225,7 +587,28 @@ void drawBall()
 /*~~~~~~~~fonction Barre~~~~~~~~~*/
 void drawBarre()
 {
-	sprite(posRectX,posRectY,"/home/yswai/Downloads/Barre.bmp");
+	if(game==3 && joueur==1)
+	{
+		sprite(posRectBasX,posRectBasY,"Assets/BarreJoueur1.bmp");
+	}
+	if(game==3 && joueur==2)
+	{
+		sprite(posRectBasX,posRectBasY,"Assets/BarreJoueur1.bmp");
+		sprite(posRectHautX,posRectHautY,"Assets/BarreJoueur2.bmp");
+	}
+	if(game==3 && joueur==3)
+	{
+		sprite(posRectBasX,posRectBasY,"Assets/BarreJoueur1.bmp");
+		sprite(posRectDroiteX,posRectDroiteY,"Assets/BarreJoueur3.bmp");
+		sprite(posRectGaucheX,posRectGaucheY,"Assets/BarreJoueur4.bmp");
+	}
+	if(game==3 && joueur==4)
+	{
+		sprite(posRectBasX,posRectBasY,"Assets/BarreJoueur1.bmp");
+		sprite(posRectHautX,posRectHautY,"Assets/BarreJoueur2.bmp");
+		sprite(posRectDroiteX,posRectDroiteY,"Assets/BarreJoueur3.bmp");
+		sprite(posRectGaucheX,posRectGaucheY,"Assets/BarreJoueur4.bmp");
+	}
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -235,7 +618,7 @@ void DrawCoeur()
 {
 	for(int i=0;i<coeur;i++)
 	{
-		sprite(i*30,WINDOW_HEIGHT-30,"/home/yswai/Downloads/Coeur.bmp");
+		sprite(i*30,WINDOW_HEIGHT-30,"Assets/Coeur.bmp");
 	}
 }
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -244,34 +627,40 @@ void DrawCoeur()
 /*~~~~~~~~fonction Game~~~~~~~~~*/
 void Game()
 {
-		
-	DrawTuto();
+	DrawMenu();
+	if(game==3)
+	{
+		DrawTuto();
 
-	drawBarre();
-	DrawCoeur();
-	drawBall();
+		drawBarre();
+		DrawCoeur();
+		drawBall();
 
-	DrawTableauBrique();
+		DrawTableauBrique();
 
-	EcranWin();
-	EcranLose();
-	
-
-	
+		EcranWin();
+		EcranLose();
+	}
 }
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-/*~~~~~~~~fonction Restart Game~~~~~~~~~*/
+/*~~~~~~~~fonction Restart Game~~~~~~~*/
 void RestartGame()
 {
 	coeur = 3;
 	start = 0;
-	compteurBrick = nbCol*nbLigne;
-	posRectX = (WINDOW_WIDTH/2)-75; 
- 	posRectY = (WINDOW_HEIGHT-80);
-	xball = posRectX+75;
-	yball = posRectY-longueurRectH+5;
+	compteurBrick = (nbCol*nbLigne)*2;
+	posRectBasX = (WINDOW_WIDTH/2)-75; 
+ 	posRectBasY = (WINDOW_HEIGHT-80);
+	posRectHautX = (WINDOW_WIDTH/2)-75; 
+	posRectHautY = 70;
+	posRectDroiteX = (WINDOW_WIDTH-100); 
+	posRectDroiteY = (WINDOW_HEIGHT/2)-75;;
+	posRectGaucheX = 70; 
+	posRectGaucheY = (WINDOW_HEIGHT/2)-75;
+	xball = posRectBasX+75;
+	yball = posRectBasY-longueurRectH+5;
 	for(int i =0;i<nbCol;i++)
 	{
 		for(int j=0;j<nbLigne;j++)
@@ -290,17 +679,25 @@ void RestartGame()
 void init_game()
 {
  	/*~~~~~~~~~~init barre~~~~~~~~~~~*/
- 	posRectX = (WINDOW_WIDTH/2)-75; 
- 	posRectY = (WINDOW_HEIGHT-80);
+ 	posRectBasX = (WINDOW_WIDTH/2)-75; 
+ 	posRectBasY = (WINDOW_HEIGHT-80);
+	posRectDroiteX = (WINDOW_WIDTH-100); 
+	posRectDroiteY = (WINDOW_HEIGHT/2)-75;;
+	posRectGaucheX = 70; 
+	posRectGaucheY = (WINDOW_HEIGHT/2)-75;
+	posRectHautX = (WINDOW_WIDTH/2)-75; 
+	posRectHautY = 70;
  	longueurRectW = 150;
  	longueurRectH = 30;
+	longueurRectV = 150;
+	largeurRectV = 30;
 	vitesseTouchex = 15;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 	/*~~~~~~~~~~init balle~~~~~~~~~~~*/
-    xball = posRectX+75;
-	yball = posRectY-(longueurRectH+5);
+    xball = posRectBasX+75;
+	yball = posRectBasY-(longueurRectH+5);
 	rayonBall = 15;
 	vitesseBallx = 5;
  	vitesseBally = -5;
@@ -314,7 +711,7 @@ void init_game()
 	longueurRectTabH = 40;
 	espaceBrick = 5;
 	nbLigne = 4;
-	nbCol = 6 ;
+	nbCol = 6;
 	ecartBrickX = (WINDOW_WIDTH-((nbCol * longueurRectTabW) + ((nbCol-1) * espaceBrick))) / 2;
 	ecartBrickY = 20;
 	for(int i=0;i<nbCol;i++)
@@ -324,16 +721,13 @@ void init_game()
 			VieBrique[i][j]=2;
 		}
 	}
-	compteurBrick = nbCol*nbLigne;
+	compteurBrick = (nbCol*nbLigne)*2;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 	/*~~~~~~~~~~init Start~~~~~~~~~~~*/
-	int start = 0;
-	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-
-	/*~~~~~~~~init VieJoueur~~~~~~~~~*/
+	start = 0;
+	quit = 0;
 	coeur = 3;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -341,18 +735,34 @@ void init_game()
 	/*~~~~~~~~init Ecran~~~~~~~~~*/
 	logoX = 150;
 	logoY = 70;
-	logoheightY = ((WINDOW_HEIGHT/2)+45);
+	logoheightY = ((WINDOW_HEIGHT/2)+150);
 	logoAgain = (WINDOW_WIDTH/2-(logoX+25));
 	logoNoYW = ((WINDOW_WIDTH/2)+25);
 	logoTryAgain = (WINDOW_WIDTH/2-(logoX+25));
 	logoNoYD = ((WINDOW_WIDTH/2)+25);
 
 	ShowEcran = 1;
+	
+	Menu1X = 415;
+	Menu2X = 780;
+	MenuY = (WINDOW_HEIGHT/2)+100;
+	MenuJoueur1Y = (WINDOW_HEIGHT/2)-50;
+	LongueurMenuX = 100;
+	LongueurMenuY = 70;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+	/*~~~~~~~~~~init Ecran~~~~~~~~~~~*/
+	game = 0;
+	joueur = 0;
+	easter = 0;
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+			
 }
 
 
-void drawGame(){
+void drawGame()
+{
 	clear();
 	Game();
 	actualize();
@@ -360,46 +770,144 @@ void drawGame(){
 }
 
 
-void KeyPressed(SDL_Keycode touche){
+/*~~~Fonction KeyBoard~~~*/
+void KeyPressed(SDL_Keycode touche)
+{
     switch (touche) {
         case SDLK_SPACE:
 			start++;
 			break;
-        case SDLK_d:
+        case SDLK_s:
         	clear();
-        	sprite(posRectX,posRectY,"/home/yswai/Downloads/Barre.bmp");
+        	sprite(posRectBasX,posRectBasY,"Assets/BarreJoueur1.bmp");
 			if(start>0)
 			{
-				posRectX += vitesseTouchex;
-				if(posRectX+longueurRectW+5< WINDOW_WIDTH )
+				posRectBasX += vitesseTouchex;
+				if(posRectBasX+longueurRectW+5< WINDOW_WIDTH )
 				{
 					vitesseTouchex = 0;
-					posRectX = posRectX + 15;
+					posRectBasX = posRectBasX + 15;
 				} 
 			}
         	break;  
 		case SDLK_q:
 			clear();
-			sprite(posRectX,posRectY,"/home/yswai/Downloads/Barre.bmp");
+			sprite(posRectBasX,posRectBasY,"Assets/BarreJoueur1.bmp");
 			if(start>0)
 			{
-				posRectX += -vitesseTouchex;
-				if(posRectX-5 > 0 )
+				posRectBasX += -vitesseTouchex;
+				if(posRectBasX-5 > 0 )
 				{
 					vitesseTouchex = 0;
-					posRectX = posRectX - 15;
+					posRectBasX = posRectBasX - 15;
 				} 
 			}
         	break;
+		if(game==3 && joueur==2 || joueur==4)	
+		{
+			case SDLK_LEFT:
+				clear();
+				sprite(posRectHautX,posRectHautY,"Assets/BarreJoueur2.bmp");
+				if(start>0)
+				{
+					posRectHautX += -vitesseTouchex;
+					if(posRectHautX-5 > 0 )
+					{
+						vitesseTouchex = 0;
+						posRectHautX = posRectHautX - 15;
+					} 
+				}
+				break;
+			case SDLK_RIGHT:
+				clear();
+				sprite(posRectHautX,posRectHautY,"Assets/BarreJoueur2.bmp");
+				if(start>0)
+				{
+					posRectHautX += vitesseTouchex;
+					if(posRectHautX+longueurRectW+5< WINDOW_WIDTH )
+					{
+						vitesseTouchex = 0;
+						posRectHautX = posRectHautX + 15;
+					} 
+				}
+        		break;
+		}
+		if(game==3 && joueur>2)
+		{
+			case SDLK_p:
+				clear();
+				sprite(posRectDroiteX,posRectDroiteY,"Assets/BarreJoueur3.bmp");
+				if(start>0)
+				{
+					posRectDroiteY += -vitesseTouchex;
+					if(posRectDroiteY-5 > 0 )
+					{
+						vitesseTouchex = 0;
+						posRectDroiteY = posRectDroiteY - 15;
+					} 
+				}
+				break;
+			case SDLK_o:
+				clear();
+				sprite(posRectDroiteX,posRectDroiteY,"Assets/BarreJoueur3.bmp");
+				if(start>0)
+				{
+					posRectDroiteY += vitesseTouchex;
+					if(posRectDroiteY+longueurRectV+5< WINDOW_HEIGHT )
+					{
+						vitesseTouchex = 0;
+						posRectDroiteY = posRectDroiteY + 15;
+					} 
+				}
+        		break;
+			case SDLK_b:
+				clear();
+				sprite(posRectGaucheX,posRectGaucheY,"Assets/BarreJoueur4.bmp");
+				if(start>0)
+				{
+					posRectGaucheY += -vitesseTouchex;
+					if(posRectGaucheY-5 > 0 )
+					{
+						vitesseTouchex = 0;
+						posRectGaucheY = posRectGaucheY - 15;
+					} 
+				}
+				break;
+			case SDLK_n:
+				clear();
+				sprite(posRectHautX,posRectHautY,"Assets/BarreJoueur4.bmp");
+				if(start>0)
+				{
+					posRectGaucheY += vitesseTouchex;
+					if(posRectGaucheY+longueurRectV+5< WINDOW_HEIGHT)
+					{
+						vitesseTouchex = 0;
+						posRectGaucheY = posRectGaucheY + 15;
+					} 
+				}
+        		break;
+		}
+		
         case SDLK_ESCAPE:
-            freeAndTerminate();
+			quit++;
+			if(game>0 && quit==1)
+			{
+				RestartGame();
+				game=1;
+			}
+            if(quit>1)
+			{
+				freeAndTerminate();
+			}	
             break;
         default:
             break;
     }
 }
+/*~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
+/*~~~Fonction Clique de souris~~~*/
 void MouseClick(int MouseX,int MouseY)
 {
 	printf("position de la souris x : %d , y : %d\n", MouseX, MouseY);
@@ -425,9 +933,58 @@ void MouseClick(int MouseX,int MouseY)
 			freeAndTerminate();
 		}
 	}
+	if(game==0)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			game = 1;
+			ShowEcran = 1;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+(LongueurMenuX)) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			easter++;
+			ShowEcran = 3;
+		}
+	}
+	if(game==0 && easter==4)
+	{
+		freeAndTerminate();
+	}
+	if(game==1)
+	{
+		if((MouseX>=Menu1X) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuJoueur1Y) && (MouseY<=MenuJoueur1Y+LongueurMenuY)&&joueur>0)
+		{
+			joueur--;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+LongueurMenuX) && (MouseY>=MenuJoueur1Y) && (MouseY<=MenuJoueur1Y+LongueurMenuY)&&joueur<4)
+		{
+			joueur++;
+		}
+		else if((MouseX>=Menu1X+175) && (MouseX<=Menu1X+175+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY)&&joueur>0)
+		{
+			game=2;
+			ShowEcran=1;
+		}
+	}
+	if(game==2)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			game = 3;
+			start=0;
+			quit=0;
+			ShowEcran = 1;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			game=1;
+		}
+	}
 }
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
+/*~~~fonction Mouvement de la souris~~~*/
 void MouseMovement(int MouseX,int MouseY)
 {
 	if(compteurBrick==0 && coeur>0)
@@ -460,10 +1017,106 @@ void MouseMovement(int MouseX,int MouseY)
 			ShowEcran = 1;
 		}
 	}
+	if(game==0 && easter==0)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 2;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 3;
+		}
+		else 
+		{
+			ShowEcran = 1;
+		}
+	}
+	if(game==0 && easter==1)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 2;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+(LongueurMenuX*2)) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 3;
+		}
+		else 
+		{
+			ShowEcran = 1;
+		}
+	}
+	if(game==0 && easter==2)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 2;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+(LongueurMenuX*2)) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 3;
+		}
+		else 
+		{
+			ShowEcran = 1;
+		}
+	}
+	if(game==0 && easter==3)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 2;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+(LongueurMenuX)) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 3;
+		}
+		else 
+		{
+			ShowEcran = 1;
+		}
+	}
+	if(game==1)
+	{
+		if((MouseX>=Menu1X) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuJoueur1Y) && (MouseY<=MenuJoueur1Y+LongueurMenuY)&&joueur>0)
+		{
+			ShowEcran = 2;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+LongueurMenuX) && (MouseY>=MenuJoueur1Y) && (MouseY<=MenuJoueur1Y+LongueurMenuY)&&joueur<4)
+		{
+			ShowEcran = 3;
+		}
+		else if((MouseX>=Menu1X+175) && (MouseX<=Menu1X+175+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY)&&joueur>0)
+		{
+			ShowEcran = 4;
+		}
+		else 
+		{
+			ShowEcran = 1;
+		}
+	}
+	if(game==2)
+	{
+		if((MouseX>=Menu1X ) && (MouseX<=Menu1X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 2;
+		}
+		else if((MouseX>=Menu2X) && (MouseX<=Menu2X+LongueurMenuX) && (MouseY>=MenuY) && (MouseY<=MenuY+LongueurMenuY))
+		{
+			ShowEcran = 3;
+		}
+		else 
+		{
+			ShowEcran = 1;
+		}
+	}
 }
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-void gameLoop() {
+void gameLoop() 
+{
     int programLaunched = 1;
     while (programLaunched == 1) {
         // Boucle pour garder le programme ouvert
@@ -511,7 +1164,8 @@ void gameLoop() {
 }
 
 
-int main(){
+int main()
+{
     /** @description 3 fonctions dans le main qui permettent de créer l'application et la maintenir ouverte :
      *  init(...) : initialiser la SDL/ fenêtre
      *  gameLoop() : boucle de jeu dans laquelle l'application reste ouverte
